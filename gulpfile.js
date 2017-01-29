@@ -3,6 +3,7 @@ var gulp = require('gulp'),
   typescript = require('gulp-typescript'),
   webserver = require('gulp-webserver'),
   tscConfig = require('./tsconfig.json'),
+  tslint=require('gulp-tslint'),
   del = require('del'),
   runSequence = require('run-sequence');
 
@@ -10,7 +11,7 @@ var appSrc = './dist/';
 var tsProject = typescript.createProject('tsconfig.json');
 
 gulp.task('build', function (callback) {
-  runSequence('clean', ['copylibs', 'copystatic', 'typescript'], callback);
+  runSequence('clean', ['copylibs', 'copystatic', 'compile'], callback);
 });
 
 gulp.task('clean', function () {
@@ -31,7 +32,15 @@ gulp.task('copylibs', function () {
       .pipe(gulp.dest(appSrc + 'lib'));
 });
 
-gulp.task('typescript', function () {
+gulp.task('tslint', function(){
+    return gulp.src("src/**/*.ts")
+        .pipe(tslint({
+            formatter: 'prose'
+        }))
+        .pipe(tslint.report());
+});
+
+gulp.task('compile',["tslint"], function () {
   return gulp
     .src(['src/**/*.ts'])
     .pipe(sourcemaps.init())
@@ -59,7 +68,7 @@ gulp.task('copystatic', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('src/**/*.ts', ['typescript']);
+  gulp.watch('src/**/*.ts', ['compile']);
   gulp.watch(staticFiles, ['copystatic']);
 });
 

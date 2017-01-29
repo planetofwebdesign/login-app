@@ -6,11 +6,12 @@
   "description": "this is a testing app for angular 2 lerning",
   "main": "index.js",
   "scripts": {
-    "start":"gulp"
+    "start":"gulp",
+    "compile": "gulp compile"
     },
   "repository": {
     "type": "git",
-    "url": "?.git"
+    "url": "https://github.com/planetofwebdesign/login-app.git"
   },
   
   "dependencies": {
