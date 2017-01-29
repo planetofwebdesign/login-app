@@ -1,0 +1,15 @@
+# compiled output
+/dist
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+
+# misc
+npm-debug.log
+/typings
+
+#System Files
+.DS_Store
