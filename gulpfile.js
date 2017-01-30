@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+  sass = require('gulp-sass'),
   sourcemaps = require('gulp-sourcemaps'),
   typescript = require('gulp-typescript'),
   webserver = require('gulp-webserver'),
@@ -10,9 +11,6 @@ var gulp = require('gulp'),
 var appSrc = './dist/';
 var tsProject = typescript.createProject('tsconfig.json');
 
-gulp.task('build', function (callback) {
-  runSequence('clean', ['copylibs', 'copystatic', 'compile'], callback);
-});
 
 gulp.task('clean', function () {
   return del(appSrc);
@@ -49,6 +47,13 @@ gulp.task('compile',["tslint"], function () {
     .pipe(gulp.dest(appSrc));
 });
 
+gulp.task('sass', function() {
+  return gulp
+    .src(['src/**/*.scss'])
+    .pipe(sass({outputStyle: 'expanded'}).on('error',sass.logError))
+    .pipe(gulp.dest(appSrc));
+});
+
 var staticFiles = [
   'src/**/*.html',
   'src/**/*.css',
@@ -63,13 +68,14 @@ var staticFiles = [
 ];
 gulp.task('copystatic', function () {
 
-  return gulp.src(["src/**/*", "!**/*.ts"])
+  return gulp.src(["src/**/*", "!**/*.ts" , "!**/*.scss"])
         .pipe(gulp.dest(appSrc));
 });
 
 gulp.task('watch', function () {
   gulp.watch('src/**/*.ts', ['compile']);
   gulp.watch(staticFiles, ['copystatic']);
+  gulp.watch('src/**/*.scss',['sass']);
 });
 
 gulp.task('webserver', function () {
@@ -79,6 +85,11 @@ gulp.task('webserver', function () {
       open: true
     }));
 });
+
+gulp.task('build', function (callback) {
+  runSequence('clean', ['copylibs', 'copystatic', 'sass', 'compile'], callback);
+});
+
 
 gulp.task('default', function (callback) {
   runSequence('clean', 'build', ['watch', 'webserver'], callback);
